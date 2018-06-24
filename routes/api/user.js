@@ -1,17 +1,19 @@
 const bcrypt = require('bcrypt')
+const passport = require('passport')
 const router = require('express').Router()
 const gravatar = require('gravatar') // 第三方头像库
+const jwt = require('jsonwebtoken') // token
 const User = require('../../models/User')
 const keys = require('../../config/keys')
 
 
 /**
  * $route GET /api/user/t
- * @desc 测试路由
- * @access public 
+ * @desc token测试
+ * @access private 
  */
-router.get('/t', (req, res) => {
-    res.json({ msg: 't 意味着 test' })
+router.get('/t', passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.json({ msg: 'token测试成功' })
 })
 
 /**
@@ -29,7 +31,7 @@ router.post('/register', (req, res) => {
                 const newUser = new User({
                     name: req.body.name,
                     email: req.body.email,
-                    avatar: avatar,
+                    avatar,
                     password: req.body.password
                 })
                 // 密码加密
@@ -48,6 +50,41 @@ router.post('/register', (req, res) => {
                 res.status(400).json({ msg: '该邮箱已被注册！' })
             }
         })
+})
+
+/**
+ * $route POST /api/user/login
+ * @desc 用户登录
+ * @access public 
+ */
+router.post('/login', (req, res) => {
+    const email = req.body.email
+    const password = req.body.password
+
+    User.findOne({ email })
+        .then(user => {
+            if (!user) {
+                res.status(404).json({ msg: '该用户不存在！' })
+            } else {
+                bcrypt.compare(password, user.password)
+                    .then(isMatch => {
+                        if (isMatch) {
+                            // 生成token
+                            const rule = {
+                                id: user.id,
+                                emial: user.emial,
+                            }
+                            jwt.sign(rule, keys.secret, { expiresIn: '1h' }, (err, token) => {
+                                if (err) throw err
+                                res.json({ msg: '登录成功', token: 'Bearer ' + token })
+                            })
+                        } else {
+                            res.status(400).json({ msg: '用户密码错误' })
+                        }
+                    })
+            }
+        })
+
 })
 
 module.exports = router

@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const passport = require('passport')
 const keys = require('./config/keys')
 const bodyParser = require('body-parser')
 const user = require('./routes/api/user')
@@ -20,6 +21,8 @@ mongoose.connect(keys.DBURI)
  */
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(passport.initialize())
+require('./config/passport')(passport)
 
 
 /**
