@@ -2,16 +2,18 @@
   "name": "account",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run dev",
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/x-lite/account.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "chaoshuai@takecloud.cn",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/x-lite/account/issues"
@@ -25,6 +27,10 @@
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.1.6",
     "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "validator": "^10.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
   }
 }

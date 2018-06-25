@@ -6,6 +6,10 @@ const jwt = require('jsonwebtoken') // token
 const User = require('../../models/User')
 const keys = require('../../config/keys')
 
+// 请求字段验证
+const validateRegisterData = require('../../validation/register')
+const validateLoginData = require('../../validation/login')
+
 
 /**
  * $route GET /api/user/t
@@ -22,6 +26,10 @@ router.get('/t', passport.authenticate('jwt', { session: false }), (req, res) =>
  * @access public 
  */
 router.post('/register', (req, res) => {
+    const { errors, isValid } = validateRegisterData(req.body)
+    if(!isValid){
+        return res.status(400).json(errors)
+    }
     User.findOne({ email: req.body.email })
         .then(user => {
             if (!user) {
@@ -58,6 +66,11 @@ router.post('/register', (req, res) => {
  * @access public 
  */
 router.post('/login', (req, res) => {
+    const { errors, isValid } = validateLoginData(req.body)
+    if(!isValid){
+        return res.status(400).json(errors)
+    }
+    
     const email = req.body.email
     const password = req.body.password
 
